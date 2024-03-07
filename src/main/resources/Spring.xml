@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+    <context:component-scan base-package="com.cc68.service.imp"/>
+    <context:component-scan base-package="com.cc68.builder.imp"/>
+    <context:component-scan base-package="com.cc68.handle.imp"/>
+    <context:component-scan base-package="com.cc68.heartbeat.imp"/>
+    <context:component-scan base-package="com.cc68.manager.imp"/>
+    <context:component-scan base-package="com.cc68.pool.imp"/>
+
+    <context:property-placeholder location="jdbc.properties"/>
+    <context:property-placeholder location="config.properties"/>
+
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
+        <property name="driverClassName" value="${jdbc.driver}"/>
+        <property name="url" value="${jdbc.url}"/>
+    </bean>
+
+    <bean class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="configLocation" value="mybatis-config.xml"/>
+        <property name="typeAliasesPackage" value="com.cc68.pojo.User"/>
+    </bean>
+
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.cc68.mapper"/>
+    </bean>
+
+    <bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <tx:annotation-driven transaction-manager="txManager"/>
+
+<!--    <bean id="server" class="com.cc68.service.imp.ServerImp">-->
+<!--&lt;!&ndash;        服务器名称&ndash;&gt;-->
+<!--        <property name="serviceName" value="${serverName}"/>-->
+<!--&lt;!&ndash;        服务器接收器&ndash;&gt;-->
+<!--        <property name="receiveManager">-->
+<!--            <bean class="com.cc68.manager.imp.ReceiveManagerImp">-->
+<!--                <constructor-arg name="port" value="${serverPort}"/>-->
+<!--            </bean>-->
+<!--        </property>-->
+<!--&lt;!&ndash;        登录用户管理器&ndash;&gt;-->
+<!--        <property name="loginUser">-->
+<!--            <bean class="com.cc68.manager.imp.UserManagerImp"/>-->
+<!--        </property>-->
+<!--&lt;!&ndash;        临时用户管理器&ndash;&gt;-->
+<!--        <property name="tempUser">-->
+<!--            <bean class="com.cc68.manager.imp.UserManagerImp"/>-->
+<!--        </property>-->
+<!--&lt;!&ndash;        心跳管理器&ndash;&gt;-->
+<!--        <property name="heartbeatManger">-->
+<!--            <bean class="com.cc68.heartbeat.imp.HeartbeatMangerImp">-->
+<!--&lt;!&ndash;                心跳监听器&ndash;&gt;-->
+<!--                <property name="listen">-->
+<!--                    <bean class="com.cc68.heartbeat.imp.HeartbeatListenImp">-->
+
+<!--                        <property name="server" ref="server"/>-->
+
+<!--                        <property name="receiveManager">-->
+<!--                            <bean class="com.cc68.manager.imp.ReceiveManagerImp">-->
+<!--                                <constructor-arg name="port" value="${heartbeatReceiveManagerPort}"/>-->
+<!--                            </bean>-->
+<!--                        </property>-->
+
+<!--                    </bean>-->
+<!--                </property>-->
+<!--&lt;!&ndash;                超时摧毁器&ndash;&gt;-->
+<!--                <property name="wrecker">-->
+<!--                    <bean class="com.cc68.heartbeat.imp.HeartbeatWreckerImp">-->
+
+<!--                        <property name="server" ref="server"/>-->
+
+<!--                        <property name="heartbeatTime" value="${HeartbeatTime}"/>-->
+
+<!--                    </bean>-->
+<!--                </property>-->
+
+<!--            </bean>-->
+<!--        </property>-->
+<!--&lt;!&ndash;        消息处理器&ndash;&gt;-->
+<!--        <property name="messageHandleManager">-->
+<!--            <bean id="messageHandleManager" class="com.cc68.manager.imp.MessageHandleManagerImp">-->
+
+<!--                <property name="server" ref="server"/>-->
+<!--&lt;!&ndash;                消息构造器&ndash;&gt;-->
+<!--                <property name="builder">-->
+<!--                    <bean class="com.cc68.builder.imp.MessageBuilderImp"/>-->
+<!--                </property>-->
+<!--&lt;!&ndash;                具体处理&ndash;&gt;-->
+<!--                <property name="service">-->
+<!--                    <map>-->
+<!--                        <entry key="xxx">-->
+<!--                            <bean class="com.cc68.handle.imp.LoginHandle">-->
+<!--                                <property name="server" ref="server"/>-->
+<!--                                <property name="messageHandleManager" ref="messageHandleManager"/>-->
+<!--                            </bean>-->
+<!--                        </entry>-->
+<!--                    </map>-->
+<!--                </property>-->
+<!--                <property name="manager">-->
+<!--                    <bean class="com.cc68.mapper.UserMapper"/>-->
+<!--                </property>-->
+<!--            </bean>-->
+<!--        </property>-->
+<!--&lt;!&ndash;        登录用户的线程池&ndash;&gt;-->
+<!--        <property name="pool">-->
+<!--            <bean class="com.cc68.pool.imp.ClientThreadPoolImp">-->
+<!--                <constructor-arg name="server" ref="server"/>-->
+<!--                <constructor-arg name="MAX" value="${poolMax}"/>-->
+<!--                <constructor-arg name="timeout" value="${timeout}"/>-->
+<!--            </bean>-->
+<!--        </property>-->
+<!--    </bean>-->
+
+
+</beans>
