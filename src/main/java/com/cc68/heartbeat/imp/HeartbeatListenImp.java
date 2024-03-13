@@ -1,9 +1,12 @@
 package com.cc68.heartbeat.imp;
 
+import com.alibaba.fastjson2.JSON;
 import com.cc68.heartbeat.HeartbeatListen;
 import com.cc68.manager.ReceiveManager;
 import com.cc68.pojo.Message;
+import com.cc68.pojo.User;
 import com.cc68.service.Server;
+import com.cc68.util.MessageUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
@@ -21,7 +24,7 @@ public class HeartbeatListenImp implements HeartbeatListen {
      * 心跳管理器的接收器
      * */
     @Autowired
-    @Qualifier("")
+    @Qualifier("receiveManagerHeartbeat")
     private ReceiveManager receiveManager;
     /**
      * 用于表示服务器何时停止
@@ -37,11 +40,21 @@ public class HeartbeatListenImp implements HeartbeatListen {
 
     @Override
     public void run() {
-        String time = server.getMessageHandleManager().getBuilder().getTime();
+        try {
+            receiveManager.init();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        String time = MessageUtil.getTime();
         System.out.println(time+"----心跳管理器启动");
         while (flag){
             Message message = receiveManager.listen();
-            server.getLoginUser().getUser(message.getOriginator()).refresh();
+            if (message != null){
+                User user = server.getLoginUser().getUser(message.getOriginator());
+                if (user!=null){
+                    user.refresh();
+                }
+            }
             try {
                 receiveManager.getAccept().close();
             } catch (IOException e) {

@@ -1,19 +1,25 @@
 package com.cc68.pool.imp;
 
-import com.cc68.manager.SendManager;
 import com.cc68.pojo.User;
 import com.cc68.pool.ClientThread;
 import com.cc68.pool.ClientThreadPool;
 import com.cc68.service.Server;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
-
+@Controller("clientThreadPool")
 public class ClientThreadPoolImp implements ClientThreadPool {
+    @Autowired
+    @Qualifier("server")
     private Server server;
     /**
      * 线程池的最大数
      * */
+    @Value("${poolMax}")
     private int MAX;
     /**
      * 用于存储线程
@@ -22,18 +28,24 @@ public class ClientThreadPoolImp implements ClientThreadPool {
     /**
      * 超时时长
      * */
+    @Value("${timeout}")
     private int timeout;
 
     private boolean flag = true;
 
     public ClientThreadPoolImp(){}
 
-    public ClientThreadPoolImp(Server server, int MAX, int timeout) {
+
+    public ClientThreadPoolImp(Server server,int MAX,int timeout) {
         this.server = server;
         this.MAX = MAX;
         this.timeout = timeout;
-        this.pool = new ArrayList<>(MAX);
+    }
 
+    public void start(){
+        this.pool = new ArrayList<>(MAX);
+        Thread thread = new Thread(this);
+        thread.start();
     }
 
     /**
@@ -71,14 +83,6 @@ public class ClientThreadPoolImp implements ClientThreadPool {
      */
 
     public void add(ClientThread socketThread) throws IOException {
-//        //为重复的登录做处理
-//        ClientThread oldThread = getThread(socketThread.getUserBean());
-//        if (oldThread!=null){
-//            oldThread.close();
-//            delete(oldThread);
-//        }
-//        Thread thread = new Thread(socketThread);
-//        thread.start();
 
         /**
          * 超出线程池容量的处理
@@ -110,8 +114,15 @@ public class ClientThreadPoolImp implements ClientThreadPool {
     }
 
     public void delete(ClientThread thread) throws IOException {
-        thread.close();
-        pool.remove(thread);
+        if (thread != null){
+            thread.close();
+            pool.remove(thread);
+        }
+    }
+
+    @Override
+    public void close() {
+        flag = false;
     }
 
     /**
@@ -192,5 +203,9 @@ public class ClientThreadPoolImp implements ClientThreadPool {
 
     public void setFlag(boolean flag) {
         this.flag = flag;
+    }
+
+    public int getSize(){
+        return pool.size();
     }
 }

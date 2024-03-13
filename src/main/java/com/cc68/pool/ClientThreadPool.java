@@ -4,6 +4,10 @@ import java.io.IOException;
 
 public interface ClientThreadPool extends Runnable{
     /**
+     * 开启线程池
+     * */
+    void start();
+    /**
      * 向线程池添加一个线程
      * */
     void add(ClientThread thread) throws IOException;
@@ -16,4 +20,6 @@ public interface ClientThreadPool extends Runnable{
      * 但是不会在UserManager中删除该用户（除非该用户的心跳出现异常）
      * */
 //    void checkThread() throws IOException;
+    void close();
+    int getSize();
 }

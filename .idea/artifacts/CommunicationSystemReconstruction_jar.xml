@@ -1,0 +1,25 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="CommunicationSystemReconstruction:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/CommunicationSystemReconstruction_jar</output-path>
+    <root id="archive" name="CommunicationSystemReconstruction.jar">
+      <element id="module-output" name="CommunicationServer" />
+      <element id="extracted-dir" path="D:/java/apache-maven-3.9.3-bin/repository/io/micrometer/micrometer-observation/1.12.0/micrometer-observation-1.12.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="D:/java/apache-maven-3.9.3-bin/repository/org/springframework/spring-beans/6.1.0/spring-beans-6.1.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="D:/java/apache-maven-3.9.3-bin/repository/com/alibaba/druid/1.2.21/druid-1.2.21.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="D:/java/apache-maven-3.9.3-bin/repository/com/alibaba/fastjson2/fastjson2/2.0.40/fastjson2-2.0.40.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="D:/java/apache-maven-3.9.3-bin/repository/com/google/protobuf/protobuf-java/3.19.4/protobuf-java-3.19.4.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="D:/java/apache-maven-3.9.3-bin/repository/org/mybatis/mybatis/3.5.13/mybatis-3.5.13.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="D:/java/apache-maven-3.9.3-bin/repository/io/micrometer/micrometer-commons/1.12.0/micrometer-commons-1.12.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="D:/java/apache-maven-3.9.3-bin/repository/jaxen/jaxen/2.0.0/jaxen-2.0.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="D:/java/apache-maven-3.9.3-bin/repository/org/springframework/spring-jdbc/6.1.0/spring-jdbc-6.1.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="D:/java/apache-maven-3.9.3-bin/repository/org/springframework/spring-expression/6.1.0/spring-expression-6.1.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="D:/java/apache-maven-3.9.3-bin/repository/org/springframework/spring-tx/6.1.0/spring-tx-6.1.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="D:/java/apache-maven-3.9.3-bin/repository/org/springframework/spring-aop/6.1.0/spring-aop-6.1.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="D:/java/apache-maven-3.9.3-bin/repository/org/mybatis/mybatis-spring/3.0.3/mybatis-spring-3.0.3.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="D:/java/apache-maven-3.9.3-bin/repository/org/springframework/spring-core/6.1.0/spring-core-6.1.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="D:/java/apache-maven-3.9.3-bin/repository/com/mysql/mysql-connector-j/8.0.31/mysql-connector-j-8.0.31.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="D:/java/apache-maven-3.9.3-bin/repository/org/springframework/spring-jcl/6.1.0/spring-jcl-6.1.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="D:/java/apache-maven-3.9.3-bin/repository/org/springframework/spring-context/6.1.0/spring-context-6.1.0.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

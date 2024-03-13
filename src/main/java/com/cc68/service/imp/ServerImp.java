@@ -1,20 +1,25 @@
 package com.cc68.service.imp;
 
+import com.alibaba.fastjson2.JSON;
 import com.cc68.heartbeat.HeartbeatManger;
-import com.cc68.manager.MessageHandleManager;
-import com.cc68.manager.ReceiveManager;
-import com.cc68.manager.UserManager;
-import com.cc68.manager.imp.ReceiveManagerImp;
+import com.cc68.manager.*;
+import com.cc68.manager.imp.ReceiveManagerServer;
+import com.cc68.mapper.MessageMapper;
+import com.cc68.mapper.UserMapper;
 import com.cc68.pojo.Message;
 import com.cc68.pojo.User;
 import com.cc68.pool.ClientThreadPool;
 import com.cc68.service.Server;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 @Transactional
 @Component("server")
@@ -28,91 +33,105 @@ public class ServerImp implements Server {
     /**
      * 服务器接收器
      * */
-//    @Autowired
+    @Autowired
+    @Qualifier("receiveManagerServer")
     private ReceiveManager receiveManager;
     /**
      * 登录的用户
      * */
+    @Autowired
+    @Qualifier("userManager")
     private UserManager loginUser;
     /**
      * 非登录事件产生的用户
      * */
+    @Autowired
+    @Qualifier("userManager")
     private UserManager tempUser;
     /**
      * 心跳管理器
      * */
+    @Autowired
+    @Qualifier("heartbeatManger")
     private HeartbeatManger heartbeatManger;
     /**
      * 消息处理器，消息构造器将被集成在其中
      * */
+    @Autowired
+    @Qualifier("messageHandleManager")
     private MessageHandleManager messageHandleManager;
     /**
      * 线程池
      * */
+    @Autowired
+    @Qualifier("clientThreadPool")
     private ClientThreadPool pool;
-    @Override
-    public void init() {
+    @Autowired
+    private UserMapper userMapper;
+    @Autowired
+    @Qualifier("userActionManager")
+    private UserActionManager userActionManager;
+    @Autowired
+    private ApplicationContext context;
 
+    @Autowired
+    private MessageMapper messageMapper;
+    @Autowired
+    @Qualifier("actionManager")
+    private ActionManager actionManager;
+
+    private HashMap<String,String> registerUsers = new HashMap<>();
+    @Override
+    public void init() throws IOException {
+        userActionManager.init();
+        receiveManager.init();
+        heartbeatManger.start();
+        pool.start();
     }
 
     @Override
-    public void start() {
+    public void run() {
         while (flag){
             Message message = receiveManager.listen();
-            Message reply = messageHandleManager.handle(message);
-            if (reply.isReply()){
-                User user = loginUser.getUser(reply.getOriginator());
-                try {
-                    user.getSendManager().send(reply);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+            if (message!=null){
+                Message reply = messageHandleManager.handle(message);
+                if (reply!=null&&reply.isReply()){
+                    User user = getUser(reply.getReceiver());
+                    if (user!=null){
+                        try {
+                            user.getSendManager().send(reply);
+                        } catch (IOException e) {
+                            try {
+                                loginUser.deleteUser(user);
+                                tempUser.deleteUser(user);
+                            } catch (IOException ex) {
+                                ex.printStackTrace();
+//                                throw new RuntimeException(ex);
+                            }
+                            e.printStackTrace();
+//                            throw new RuntimeException(e);
+                        }
+                    }
                 }
             }
-//            String originator = message.getOriginator();
-//            String messageType = message.getType();
-//
-//            switch (messageType){
-//                case "online":
-//            }
-
-//            if ("online".equals(messageBean.getType())){
-//                userBean = usersManager.getUser(messageBean.getOriginator());
-//                MessageBean replyBean = HandleMessage.handle(messageBean,userBean, this);
-//                userBean.getSendManager().send(replyBean);
-//                continue;
-//            }
-//
-//            //判读是否为登录事件，改事件较为特殊
-//            if ("login".equals(messageBean.getType()) || "logon".equals(messageBean.getType())
-//                    ||"changPwd".equals(messageBean.getType())){
-//                HashMap<String, String> data = messageBean.getData();
-//                userBean = new UserBean(data.get("account"),data.get("password"));
-//                userBean.setSocket(receiveManager.getAccept());
-//            }else {
-//                userBean = usersManager.getUser(messageBean.getOriginator());
-//            }
-//            MessageBean replyBean = HandleMessage.handle(messageBean, userBean,this);
-//            ConsoleMessageManger.send(HandleMessage.getLog());
-//
-//            boolean flag = Boolean.parseBoolean(replyBean.getData().get("flag"));
-//            if (flag){
-//                userBean.getSendManager().send(replyBean);
-//            }
-//
-//            if ("logon".equals(messageBean.getType())||"changPwd".equals(messageBean.getType())
-//                    || ("login".equals(replyBean.getType())&&"400".equals(replyBean.getData().get("status")))){
-//                SocketThread thread = pool.getThread(userBean);
-//                userBean.close();
-//                if (thread != null){
-//                    thread.close();
-//                }
-//            }
         }
     }
 
     @Override
-    public void close() {
+    public void close() throws IOException {
+        flag = false;
+        loginUser.close();
+        tempUser.close();
+        receiveManager.close();
+        heartbeatManger.close();
+        pool.close();
+        ((ClassPathXmlApplicationContext)context).close();
+        System.exit(0);
+    }
 
+    public User getUser(String account){
+        User user = loginUser.getUser(account);
+        return user != null ? user:tempUser.getUser(account);
     }
 
     @Override
@@ -124,11 +143,19 @@ public class ServerImp implements Server {
         this.serviceName = serviceName;
     }
 
-//    public ReceiveManagerImp getReceiveManager() {
-//        return receiveManager;
-//    }
+    public boolean isFlag() {
+        return flag;
+    }
 
-    public void setReceiveManager(ReceiveManagerImp receiveManager) {
+    public void setFlag(boolean flag) {
+        this.flag = flag;
+    }
+
+    public ReceiveManager getReceiveManager() {
+        return receiveManager;
+    }
+
+    public void setReceiveManager(ReceiveManager receiveManager) {
         this.receiveManager = receiveManager;
     }
 
@@ -158,6 +185,7 @@ public class ServerImp implements Server {
         this.heartbeatManger = heartbeatManger;
     }
 
+    @Override
     public MessageHandleManager getMessageHandleManager() {
         return messageHandleManager;
     }
@@ -166,11 +194,84 @@ public class ServerImp implements Server {
         this.messageHandleManager = messageHandleManager;
     }
 
+    @Override
     public ClientThreadPool getPool() {
         return pool;
     }
 
     public void setPool(ClientThreadPool pool) {
         this.pool = pool;
+    }
+
+    @Override
+    public UserMapper getUserMapper() {
+        return userMapper;
+    }
+
+    public void setUserMapper(UserMapper userMapper) {
+        this.userMapper = userMapper;
+    }
+
+    public ApplicationContext getContext() {
+        return context;
+    }
+
+    public void setContext(ApplicationContext context) {
+        this.context = context;
+    }
+
+    public UserActionManager getUserActionManager() {
+        return userActionManager;
+    }
+
+    public void setUserActionManager(UserActionManager userActionManager) {
+        this.userActionManager = userActionManager;
+    }
+
+    public MessageMapper getMessageMapper() {
+        return messageMapper;
+    }
+
+    public void setMessageMapper(MessageMapper messageMapper) {
+        this.messageMapper = messageMapper;
+    }
+
+    public ServerImp() {
+    }
+
+    public ActionManager getActionManager() {
+        return actionManager;
+    }
+
+    public void setActionManager(ActionManager actionManager) {
+        this.actionManager = actionManager;
+    }
+
+    public HashMap<String, String> getRegisterUsers() {
+        return registerUsers;
+    }
+
+    public void setRegisterUsers(HashMap<String, String> registerUsers) {
+        this.registerUsers = registerUsers;
+    }
+
+    public ServerImp(String serviceName, boolean flag, ReceiveManager receiveManager, UserManager loginUser,
+                     UserManager tempUser, HeartbeatManger heartbeatManger, MessageHandleManager messageHandleManager,
+                     ClientThreadPool pool, UserMapper userMapper,
+                     UserActionManager userActionManager, ApplicationContext context,
+                     MessageMapper messageMapper, ActionManager actionManager) {
+        this.serviceName = serviceName;
+        this.flag = flag;
+        this.receiveManager = receiveManager;
+        this.loginUser = loginUser;
+        this.tempUser = tempUser;
+        this.heartbeatManger = heartbeatManger;
+        this.messageHandleManager = messageHandleManager;
+        this.pool = pool;
+        this.userMapper = userMapper;
+        this.userActionManager = userActionManager;
+        this.context = context;
+        this.messageMapper = messageMapper;
+        this.actionManager = actionManager;
     }
 }

@@ -1,11 +1,11 @@
-package com.cc68.builder;
+package com.cc68.test.builder;
 
 import com.cc68.pojo.Message;
 import com.cc68.pojo.User;
 
 import java.util.HashMap;
-
-public interface MessageBuilder {
+//MessageReply
+public interface MessageBuild {
     /**
      * 构建一个需要发送的消息
      * account为发送者，在服务器调用的情况下，为服务器的名称

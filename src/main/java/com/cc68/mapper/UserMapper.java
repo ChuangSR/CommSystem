@@ -1,9 +1,11 @@
 package com.cc68.mapper;
 
 import com.cc68.pojo.User;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 
+//@Transactional
 public interface UserMapper {
     //根据账号查询账户
     User select(User user);

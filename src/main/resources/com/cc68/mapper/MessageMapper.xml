@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cc68.mapper.MessageMapper">
+    <update id="createTable">
+        CREATE TABLE message_${account}(
+            `ID` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+            `originator` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT NULL,
+            `receiver` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT NULL,
+            `message` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT NULL,
+            `type` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT NULL,
+            `time` int NULL DEFAULT NULL,
+            PRIMARY KEY (`ID`) USING BTREE
+        ) ENGINE = InnoDB CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci ROW_FORMAT = Dynamic;
+--         SET FOREIGN_KEY_CHECKS = 1;
+    </update>
+    <insert id="insertOriginatorMessageDatabase" parameterType="com.cc68.pojo.MessageDatabase">
+        insert into message_${originator}(id,originator,receiver,message,type,time)
+        values (#{ID},#{originator},
+                #{receiver},#{message},
+                #{type},#{time});
+    </insert>
+
+    <insert id="insertReceiverMessageDatabase" parameterType="com.cc68.pojo.MessageDatabase">
+        insert into message_${receiver}(id,originator,receiver,message,type,time)
+        values (#{ID},#{originator},
+                #{receiver},#{message},
+                #{type},#{time});
+    </insert>
+
+    <select id="messageLoad" parameterType="com.cc68.pojo.MessageDatabase">
+        select * from message_${account} where message_${account}.time > #{time} order by time;
+    </select>
+<!--    <select id="selectAllMessage" resultType="com.cc68.pojo.MessageDatabase">-->
+<!--        select * from message_${account}-->
+<!--    </select>-->
+<!--    &lt;!&ndash;这个id时唯一的表示这个SQL语句&ndash;&gt;-->
+<!--    <select id="selectMessage" parameterType="java.lang.String">-->
+<!--        select account from t_users where account = #{account};-->
+<!--    </select>-->
+
+<!--    <update id="update">-->
+<!--        update t_users set lastLoginTime=#{time} where account = #{account};-->
+<!--    </update>-->
+
+<!--    <insert id="insert">-->
+<!--        insert into t_users(account,lastLoginTime) values (#{account},#{time});-->
+<!--    </insert>-->
+
+</mapper>

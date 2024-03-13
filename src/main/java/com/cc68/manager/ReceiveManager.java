@@ -25,4 +25,6 @@ public interface ReceiveManager {
      * 关闭程序
      * */
     void close() throws IOException;
+
+    void init() throws IOException;
 }

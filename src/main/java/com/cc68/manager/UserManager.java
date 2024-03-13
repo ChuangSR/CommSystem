@@ -27,8 +27,17 @@ public interface UserManager {
      * 删除一个用户
      * */
     void deleteUser(User user) throws IOException;
+    void deleteUser(String account) throws IOException;
+
+    void deleteUser(ArrayList<User> temp) throws IOException;
+    /**
+     * 仅仅进行用户的删除，不会关闭用户
+     * */
+    void delete(User user);
     /**
      * 获取在线人数
      * */
     int getOnline();
+
+    void close();
 }

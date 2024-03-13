@@ -3,18 +3,23 @@ package com.cc68.manager.imp;
 import com.alibaba.fastjson2.JSON;
 import com.cc68.manager.ReceiveManager;
 import com.cc68.pojo.Message;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Controller;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Properties;
+import java.util.Arrays;
 
 /**
  * 一个接收器
  * */
-public class ReceiveManagerImp implements ReceiveManager {
+@Controller("receiveManagerServer")
+public class ReceiveManagerServer implements ReceiveManager {
+    @Value("${serverPort}")
+    private int port;
 
     private ServerSocket serverSocket;
 
@@ -30,13 +35,16 @@ public class ReceiveManagerImp implements ReceiveManager {
         return accept;
     }
 
-    public ReceiveManagerImp() {
+    public ReceiveManagerServer() {
     }
 
-    public ReceiveManagerImp(Integer port) throws IOException {
-        this.serverSocket = new ServerSocket(port);
+    public ReceiveManagerServer(int port) {
+        this.port = port;
     }
 
+    public void init() throws IOException {
+        serverSocket = new ServerSocket(port);
+    }
     /**
      * 监听端口
      * */
@@ -44,10 +52,11 @@ public class ReceiveManagerImp implements ReceiveManager {
         Message message = null;
         try {
             accept = serverSocket.accept();
+            System.out.println(Arrays.toString(accept.getInetAddress().getAddress()));
             BufferedReader reader = new BufferedReader(new InputStreamReader(accept.getInputStream()));
             message = JSON.parseObject(reader.readLine(), Message.class);
         } catch (IOException e) {
-            e.printStackTrace();
+//            e.printStackTrace();
         }
         return message;
     }

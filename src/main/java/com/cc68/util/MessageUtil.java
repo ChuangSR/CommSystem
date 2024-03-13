@@ -1,12 +1,9 @@
-package com.cc68.builder.imp;
+package com.cc68.util;
 
-import com.cc68.builder.MessageBuilder;
-import com.cc68.mapper.LogMapper;
+import com.alibaba.fastjson2.JSON;
 import com.cc68.pojo.Message;
 import com.cc68.pojo.MessageDatabase;
 import com.cc68.pojo.User;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
 import java.security.MessageDigest;
@@ -14,21 +11,10 @@ import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
-@Component("messageBuilder")
-public class MessageBuilderImp implements MessageBuilder {
-//    private LogMapper logMapper;
-    @Override
-    public Message buildMessage(String account, String type, HashMap<String, String> data) {
-        return null;
-    }
 
-    @Override
-    public Message replyMessage(String serverName, String ID, HashMap<String, String> data) {
-        return null;
-    }
-
-    @Override
-    public String getMD5(String input) {
+public class MessageUtil {
+    private MessageUtil(){}
+    public static String getMD5(String input) {
         if(input == null || input.length() == 0) {
             return null;
         }
@@ -50,31 +36,38 @@ public class MessageBuilderImp implements MessageBuilder {
         }
         return null;
     }
-    private String getID(String type,String account){
+    private static String getID(String type,String account){
         long timeMillis = System.currentTimeMillis();
         StringBuilder builder = new StringBuilder();
         builder.append(timeMillis).append(type).append(account);
         return getMD5(builder.toString());
     }
 
-    @Override
-    public String getTime() {
+    public static String getTime() {
         SimpleDateFormat formatter= new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
         Date date = new Date(System.currentTimeMillis());
         return formatter.format(date);
     }
 
-    @Override
-    public void saveMessage(Message bean, User user) {
-        toMessageDatabase(bean,user.getAccount());
+    public static MessageDatabase toMessageDatabase(Message message){
+        MessageDatabase messageDatabase = new MessageDatabase();
+        messageDatabase.setID(message.getID());
+        messageDatabase.setOriginator(message.getOriginator());
+        messageDatabase.setReceiver(message.getReceiver());
+        messageDatabase.setType(message.getType());
+        messageDatabase.setMessage(message.getData().get("message").toString());
+        messageDatabase.setTime(message.getTime());
+        return messageDatabase;
+    }
+    public static Message buildMessage(String account, String type, HashMap<String, String> data) {
+        return null;
     }
 
-    private MessageDatabase toMessageDatabase(Message message, String account){
-        MessageDatabase messageDatabase = new MessageDatabase();
-        messageDatabase.setOriginator(message.getOriginator());
-        messageDatabase.setReceiver(account);
-        messageDatabase.setType(message.getType());
-        messageDatabase.setMessage(message.getData().get("message"));
-        return messageDatabase;
+    public static Message replyMessage(String serverName,String receiver, String ID,String type, HashMap<String, Object> data,boolean reply) {
+        return new Message(ID,serverName,receiver,type,data,reply);
+    }
+
+    public static Message replyMessage(String serverName,String receiver,String type, HashMap<String, Object> data,boolean reply) {
+        return new Message(getID(type,receiver),serverName,receiver,type,data,reply);
     }
 }
