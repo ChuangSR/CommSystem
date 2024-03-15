@@ -21,7 +21,6 @@ public class LogoutHandle implements Handle {
         try {
             server.getLoginUser().deleteUser(originator);
         } catch (IOException e) {
-//            throw new RuntimeException(e);
         }
         ActionManager actionManager = server.getActionManager();
         actionManager.action("userUpdateBroadcast","logout",message.getOriginator());

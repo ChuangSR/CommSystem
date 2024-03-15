@@ -147,21 +147,6 @@ public class ClientThreadPoolImp implements ClientThreadPool {
             return;
         }
 
-//        String[] data = new String[1];
-//        data[0] = MessageUtil.getTime();
-//        //构造消息
-//        MessageBean bean = MessageUtil.buildMessage("offline",data, server.getConfig().getProperty("serverName"));
-//
-//        //发送消息
-//        SendManager sendManager = userBean.getSendManager();
-//        sendManager.send(bean);
-//
-//        //设置线程状态
-//        userBean.setThreadStatus(false);
-//
-//        //关闭对象
-//        thread.close();
-//        userBean.close();
     }
 
 

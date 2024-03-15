@@ -1,6 +1,5 @@
 package com.cc68.handle.imp;
 
-import com.alibaba.fastjson2.JSON;
 import com.cc68.handle.Handle;
 import com.cc68.mapper.MessageMapper;
 import com.cc68.pojo.Message;

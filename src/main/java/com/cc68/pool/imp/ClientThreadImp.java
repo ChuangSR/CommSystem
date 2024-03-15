@@ -56,12 +56,6 @@ public class ClientThreadImp implements ClientThread {
                 if (handle!=null&&handle.isReply()){
                     user.getSendManager().send(handle);
                 }
-//                MessageBean replyBean = HandleMessage.handle(bean, userBean,server);
-//                boolean flag = Boolean.parseBoolean(replyBean.getData().get("flag"));
-//                if (flag){
-//                    userBean.getSendManager().send(replyBean);
-//                }
-//                ConsoleMessageManger.send(HandleMessage.getLog());
             } catch (IOException e) {
                 return;
             }

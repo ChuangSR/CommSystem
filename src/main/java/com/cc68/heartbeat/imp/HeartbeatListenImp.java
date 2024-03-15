@@ -1,6 +1,5 @@
 package com.cc68.heartbeat.imp;
 
-import com.alibaba.fastjson2.JSON;
 import com.cc68.heartbeat.HeartbeatListen;
 import com.cc68.manager.ReceiveManager;
 import com.cc68.pojo.Message;
