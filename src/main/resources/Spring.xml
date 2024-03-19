@@ -50,6 +50,8 @@
                 <entry key="getUser" value-ref="getUserHandle"/>
                 <entry key="send" value-ref="sendHandle"/>
                 <entry key="messageLoad" value-ref="messageLoadHandle"/>
+                <entry key="setPassword" value-ref="setPasswordHandle"/>
+                <entry key="unregister" value-ref="unregisterHandle"/>
             </map>
         </property>
     </bean>

@@ -1,6 +1,7 @@
 package com.cc68.mapper;
 
 import com.cc68.pojo.User;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -12,9 +13,9 @@ public interface UserMapper {
     //查询所有账户
     ArrayList<User> selectAll();
     //删除账户
-    int delete(User user);
+    int delete(String account);
     //更新账户
-    int update(User user);
+    int update(@Param("account")String account,@Param("password")String password);
     //添加账户
     int insert(User user);
 }

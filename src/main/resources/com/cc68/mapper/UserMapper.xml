@@ -13,7 +13,7 @@
     </select>
 
     <delete id="delete" parameterType="com.cc68.pojo.User">
-        delete from t_user where account = #{account};
+        delete from t_users where account = #{account};
     </delete>
 
     <update id="update" parameterType="com.cc68.pojo.User">
